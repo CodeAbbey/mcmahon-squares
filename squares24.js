@@ -3,6 +3,7 @@ function Squares24(opts) {
     this.h = 4;
     this.colors = ['#FF0000', '#E0E000', '#3020FF', '#000000']
     this.size = 80;
+    this.moving = -1;
     if (typeof(opts) == 'object') {
         for (var key in opts) {
             this[key] = opts[key];
@@ -19,7 +20,8 @@ Squares24.prototype.init = function() {
     this.initialSetup();
     this.draw();
     var self = this;
-    canvas.onmousedown = function(e) {self.click(e)};
+    canvas.onmousedown = function(e) {self.mouseDown(e)};
+    canvas.onmouseup = function(e) {self.mouseUp(e)};
 }
 
 Squares24.prototype.initialSetup = function() {
@@ -90,12 +92,33 @@ Squares24.prototype.rotate = function(index) {
     this.squares[index] = s.substring(1) + s.charAt(0);
 }
 
-Squares24.prototype.click = function(event) {
-    if (this.running) {
-        return;
-    }
+Squares24.prototype.mouseDown = function(event) {
     event.preventDefault();
     var pos = this.ch.posFromEvent(event);
+    pos.ts = new Date().getTime();
+    pos.index = this.nearestSquare(pos);
+    this.moving = pos;
+}
+
+Squares24.prototype.mouseUp = function(event) {
+    event.preventDefault();
+    var pos = this.ch.posFromEvent(event);
+    var sq = this.nearestSquare(pos);
+    var t = new Date().getTime();
+    if (sq == this.moving.index) {
+        if (t - this.moving.ts < 300) {
+            this.rotate(sq);
+        }
+    } else {
+        t = this.squares[sq];
+        this.squares[sq] = this.squares[this.moving.index];
+        this.squares[this.moving.index] = t;
+    }
+    this.moving = -1;
+    this.draw();
+}
+
+Squares24.prototype.nearestSquare = function(pos) {
     var best = -1;
     var bestVal = Infinity;
     for (var i in this.squares) {
@@ -106,6 +129,5 @@ Squares24.prototype.click = function(event) {
             bestVal = dist;
         }
     }
-    this.rotate(best);
-    this.draw();
+    return best;
 }
