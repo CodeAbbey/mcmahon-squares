@@ -34,6 +34,22 @@ CanvasHelper.prototype.posFromEvent = function(e) {
     return {x: offsetX, y: offsetY};
 }
 
+CanvasHelper.prototype.poly = function(pts) {
+    var ctx = this.ctx;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (var i = 1; i < pts.length; i++) {
+        p = arguments[i];
+        ctx.lineTo(pts[i][0], pts[i][1]);
+    }
+    ctx.closePath();
+}
+
+CanvasHelper.prototype.fillPoly = function() {
+    this.poly(arguments);
+    this.ctx.fill();
+}
+
 CanvasHelper.prototype.rand = function(seed) {
     if (typeof(seed) != 'undefined') {
         this.rndval = seed;
