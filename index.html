@@ -1,0 +1,24 @@
+<!doctype html>
+
+<html>
+<head>
+    <title>Gardner's 24 Color Squares in JavaScript</title>
+    <script src="./canvashelper.js"></script>
+    <script src="./squares24.js"></script>
+</head>
+<body>
+    <div style="text-align:center">
+    <h1>Martin Gardner's 24 Color Squares</h1>
+<!--    <div>For CodeAbbey problem <a href="http://www.codeabbey.com/index/task_view/hard-life">Hard Life</a></div>--><br/><br/>
+    <canvas id="demo" width="600" height="400" style="border:5px solid #888;border-radius: 5px;background: black;"></canvas>
+    <br/>
+        <input type="button" onclick="squares.shuffle()" value="Shuffle"/>
+    </div>
+
+    <script>
+    window.onload = function() {
+        squares = new Squares24({size: 120});
+    }
+    </script>
+
+</body>
