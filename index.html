@@ -13,14 +13,19 @@
     <div>Drag squares to swap them, click to rotate.<br/>
         Goal is to make all the border "triangles" of
         the same color,<br/>while pairs of inner "triangles" should match when they touch the same edge.</div><br/>
+    <span style="font-weight:bold" id="matches"></span>
+    <br/>
     <canvas id="demo" width="600" height="400" style="border:5px solid #888;border-radius: 5px;background: black;"></canvas>
     <br/>
-        <input type="button" onclick="squares.shuffleAndDraw()" value="Shuffle"/>
+    <input type="button" onclick="squares.shuffleAndDraw()" value="Shuffle"/>
     </div>
 
     <script>
     window.onload = function() {
-        squares = new Squares24({size: 120});
+        function info(score) {
+            document.getElementById('matches').innerHTML = 'Matches: ' + score + ' of 58';
+        }
+        squares = new Squares24({size: 120, infoCallback: info});
     }
     </script>
 

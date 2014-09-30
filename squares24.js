@@ -5,6 +5,7 @@ function Squares24(opts) {
     this.size = 80;
     this.moving = null;
     this.rotating = null;
+    this.infoCallback = null;
     if (typeof(opts) == 'object') {
         for (var key in opts) {
             this[key] = opts[key];
@@ -24,7 +25,7 @@ Squares24.prototype.init = function() {
     canvas.onmousedown = function(e) {self.mouseDown(e)};
     canvas.onmouseup = function(e) {self.mouseUp(e)};
     canvas.onmousemove = function(e) {self.mouseMove(e)};
-    setInterval(function() {self.animator()}, 100);
+    setInterval(function() {self.animator()}, 50);
 }
 
 Squares24.prototype.initialSetup = function() {
@@ -67,6 +68,7 @@ Squares24.prototype.shuffle = function() {
         this.squares[i] = this.squares[j];
         this.squares[j] = t;
     }
+    this.recalculate();
 }
 
 Squares24.prototype.shuffleAndDraw = function() {
@@ -137,6 +139,64 @@ Squares24.prototype.rotate = function(index) {
     this.squares[index] = s.substring(1) + s.charAt(0);
 }
 
+Squares24.prototype.recalculate = function() {
+    var score = this.recalculateBorder();
+    score += this.recalculateHorz();
+    score += this.recalculateVert();
+    if (typeof(this.infoCallback) == 'function') {
+        this.infoCallback(score);
+    }
+    return score;
+}
+
+Squares24.prototype.recalculateVert = function() {
+    var sum = 0;
+    var sq = this.squares;
+    for (var x = 1; x < this.w; x++) {
+        for (var y = 0; y < this.h; y++) {
+            var pos = y * this.w + x;
+            if (sq[pos - 1].charAt(0) == sq[pos].charAt(2)) {
+                sum++;
+            }
+        }
+    }
+    return sum;
+}
+
+Squares24.prototype.recalculateHorz = function() {
+    var sum = 0;
+    var sq = this.squares;
+    for (var y = 1; y < this.h; y++) {
+        for (var x = 0; x < this.w; x++) {
+            var pos = y * this.w + x;
+            if (sq[pos - this.w].charAt(1) == sq[pos].charAt(3)) {
+                sum++;
+            }
+        }
+    }
+    return sum;
+}
+
+Squares24.prototype.recalculateBorder = function() {
+    var cnt = [0, 0, 0];
+    var sq = this.squares;
+    for (var x = 0; x < this.w; x++) {
+        cnt[parseInt(sq[x].charAt(3))]++;
+        cnt[parseInt(sq[x + (this.h - 1) * this.w].charAt(1))]++;
+    }
+    for (var y = 0; y < this.h; y++) {
+        cnt[parseInt(sq[y * this.w].charAt(2))]++;
+        cnt[parseInt(sq[(y + 1) * this.w - 1].charAt(0))]++;
+    }
+    var best = 0;
+    for (var i = 0; i < 3; i++) {
+        if (cnt[i] > cnt[best]) {
+            best = i;
+        }
+    }
+    return cnt[best];
+}
+
 Squares24.prototype.mouseDown = function(event) {
     if (this.rotating !== null) {
         return;
@@ -163,6 +223,7 @@ Squares24.prototype.mouseUp = function(event) {
         t = this.squares[sq];
         this.squares[sq] = this.squares[this.moving.index];
         this.squares[this.moving.index] = t;
+        this.recalculate();
     }
     this.moving = null;
     this.draw();
@@ -183,9 +244,10 @@ Squares24.prototype.animator = function() {
     if (this.rotating === null) {
         return;
     }
-    this.rotating.angle -= 0.2;
+    this.rotating.angle -= 0.33333333;
     if (this.rotating.angle <= -0.9999) {
         this.rotate(this.rotating.index);
+        this.recalculate();
         this.rotating = null;
     }
     this.draw();
