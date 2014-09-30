@@ -50,6 +50,11 @@ CanvasHelper.prototype.fillPoly = function() {
     this.ctx.fill();
 }
 
+CanvasHelper.prototype.drawPoly = function() {
+    this.poly(arguments);
+    this.ctx.stroke();
+}
+
 CanvasHelper.prototype.rand = function(seed) {
     if (typeof(seed) != 'undefined') {
         this.rndval = seed;
