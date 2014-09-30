@@ -24,6 +24,9 @@
     window.onload = function() {
         function info(score) {
             document.getElementById('matches').innerHTML = 'Matches: ' + score + ' of 58';
+            if (score == 58) {
+                alert('Congratulations!\n\nYou have found one of 10000+ solutions :)');
+            }
         }
         squares = new Squares24({size: 120, infoCallback: info});
     }
